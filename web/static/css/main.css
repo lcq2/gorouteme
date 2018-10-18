@@ -1,0 +1,77 @@
+body {
+    font-size: .86rem;
+}
+
+/* login form */
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.form-signin .form-signin-heading {
+    margin-bottom: 5px;
+}
+
+.form-signin .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.form-signin .form-control:focus {
+    z-index: 2;
+    border-color: #ff80ff;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(255, 100, 255, 0.5);
+
+}
+
+.form-signin input[type="text"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.status-content {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.packages-content {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.packages-card {
+    width: 75%;
+}
+
+.packages-table {
+    width: 100%;
+}
+
+.packages-table td {
+    white-space: nowrap;
+}
+
+.sysinfo-card {
+    width: 75%;
+}
+
+.shutdown-content {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.shutdown-card {
+    width: 75%;
+}

@@ -1,0 +1,60 @@
+{{ define "base" }}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/main.css">
+        {{ template "header" }}
+        <script src="/scripts/jquery.min.js"></script>
+    </head>
+    <body class="bg-dark">
+    {{ if .NavBar }}
+    <div class="container bg-dark">
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+            <a class="navbar-brand" href="#">GoRouteMe</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                            System
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/system_status/">Status</a>
+                            <a class="dropdown-item" href="/system_packages/">Packages</a>
+                            <a class="dropdown-item" href="/system_shutdown/">Reboot/Shutdown</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                            Network
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/interfaces/">Interfaces</a>
+                            <a class="dropdown-item" href="#">IPTables</a>
+                        </div>
+                    </li>
+                    <li class="nav-item text-nowrap">
+                        <a class="nav-link" href="/logout/">Sign out</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    {{ end }}
+    <div class="container bg-secondary rounded">
+    {{ template "content" . }}
+    </div>
+    <script src="/scripts/popper.min.js"></script>
+    <script src="/scripts/bootstrap.min.js"></script>
+    <script src="/scripts/utils.js"></script>
+    {{ template "footer" }}
+    </body>
+</html>
+{{ end }}

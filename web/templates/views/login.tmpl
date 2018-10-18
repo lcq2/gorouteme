@@ -1,0 +1,13 @@
+{{ define "header" }}{{ end }}
+{{ define "content" }}
+<form class="form-signin" method="post" action="/login/">
+    <h2 class="form-signin-heading text-light">Login</h2>
+    <label for="inputUsername" class="sr-only">Username:</label>
+    <input type="text" id="inputUsername" name="inputUsername" class="form-control border border-secondary" placeholder="username" required autofocus>
+    <label for="inputPassword" class="sr-only">Password:</label>
+    <input type="password" id="inputPassword" name="inputPassword" class="form-control border border-secondary" placeholder="password" required>
+    <button class="btn btn-lg btn-dark btn-block" type="submit">Login</button>
+    <input type="hidden" name="loginToken" value="{{ .LoginToken }}">
+</form>
+{{ end }}
+{{ define "footer" }}{{ end }}

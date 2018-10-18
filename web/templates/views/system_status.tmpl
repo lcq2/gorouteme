@@ -1,0 +1,159 @@
+{{ define "header" }}{{ end }}
+{{ define "content" }}
+<div class="status-content">
+<h2 class="text-center">Status</h2>
+<div id="dashboard">
+    <div class="card bg-dark text-white text-center sysinfo-card mx-auto">
+        <div class="card-header" id="sysinfoHeader">
+            <a class="card-link" data-toggle="collapse" data-parent="#dashboard" href="#sysinfo">
+                System information
+            </a>
+        </div>
+        <div id="sysinfo" class="collapse show">
+            <div class="card-block">
+                <table class="table table-sm table-dark table-striped">
+                    <tbody>
+                        <tr>
+                            <td><span class="font-weight-bold">Hostname</span></td>
+                            <td>{{ .SystemInfo.Hostname }}</td>
+                        </tr>
+                        <tr>
+                            <td><span class="font-weight-bold">Kernel name</span></td>
+                            <td>{{ .SystemInfo.KernelName }}</td>
+                        </tr>
+                        <tr>
+                            <td><span class="font-weight-bold">Kernel release</span></td>
+                            <td>{{ .SystemInfo.KernelRelease }}</td>
+                        </tr>
+                        <tr>
+                            <td><span class="font-weight-bold">Kernel version</span></td>
+                            <td>{{ .SystemInfo.KernelVersion }}</td>
+                        </tr>
+                        <tr>
+                            <td><span class="font-weight-bold">Uptime</span></td>
+                            <td id="uptime">{{ .SystemStatus.Uptime }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="card bg-dark text-white text-center sysinfo-card mx-auto">
+        <div class="card-header" id="cpuinfoHeader">
+            <a class="collapsed card-link" data-toggle="collapse" data-parent="#dashboard" href="#cpuinfo">
+                CPU
+            </a>
+        </div>
+        <div id="cpuinfo" class="collapse">
+            <div class="card-block">
+                <table class="table table-sm table-dark table-striped">
+                    <tbody>
+                        <tr>
+                            <td><span class="font-weight-bold">Count</span></td>
+                            <td id="cpuCount">{{ .SystemInfo.CPUCount }}</td>
+                        </tr>
+                        <tr>
+                            <td><span class="font-weight-bold">Vendor</span></td>
+                            <td>{{ .SystemInfo.CPUVendor }}</td>
+                        </tr>
+                        <tr>
+                            <td><span class="font-weight-bold">Model</span></td>
+                            <td>{{ .SystemInfo.CPUModel }}</td>
+                        </tr>
+                        {{ range $i, $usage := .SystemStatus.CPUUsage }}
+                        <tr>
+                            <td>
+                                <span class="font-weight-bold">
+                                    {{ if eq $i 0 }}
+                                        Cumulative usage
+                                    {{ else }}
+                                        Core {{$i}} usage
+                                    {{ end }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: {{$usage}}%" id="core{{$i}}">{{$usage}}</div>
+                                </div>
+                            </td>
+                        </tr>
+                        {{ end }}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="card bg-dark text-white text-center sysinfo-card mx-auto">
+        <div class="card-header" id="meminfoHeader">
+            <a class="collapsed card-link" data-toggle="collapse" data-parent="#dashboard" href="#meminfo">
+                Memory
+            </a>
+        </div>
+        <div id="meminfo" class="collapse">
+            <div class="card-block">
+                <table class="table table-sm table-dark table-striped">
+                    <tbody>
+                        <tr>
+                            <td><span class="font-weight-bold">Total</span></td>
+                            <td>{{ .SystemInfo.TotalMemory }}</td>
+                        </tr>
+                        <tr>
+                            <td><span class="font-weight-bold">Free</span></td>
+                            <td id="freeMemory">{{ .SystemStatus.FreeMemory }}</td>
+                        </tr>
+                        <tr>
+                            <td><span class="font-weight-bold">Available</span></td>
+                            <td id="availableMemory">{{ .SystemStatus.AvailableMemory }}</td>
+                        </tr>
+                        <tr>
+                            <td><span class="font-weight-bold">Cached</span></td>
+                            <td id="cachedMemory">{{ .SystemStatus.CachedMemory }}</td>
+                        </tr>
+                        <tr>
+                            <td><span class="font-weight-bold">Swap total</span></td>
+                            <td>{{ .SystemInfo.SwapTotal }}</td>
+                        </tr>
+                        <tr>
+                            <td><span class="font-weight-bold">Swap free</span></td>
+                            <td id="swapFree">{{ .SystemStatus.SwapFree }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+    $(document).ready(function() {
+        var uptime = $('#uptime');
+        var freeMemory = $('#freeMemory');
+        var availableMemory = $('#availableMemory');
+        var cachedMemory = $('#cachedMemory');
+        var swapFree = $('#swapFree');
+        var totalCPUCount = {{.SystemInfo.CPUCount}}+1;
+        var usages = [];
+        for (i = 0; i < totalCPUCount; i++) {
+            usages.push($("#core"+i));
+        }
+
+        setInterval(function() {
+            var systemStaus = $.getJSON("/system_status/update", function(data) {
+                uptime.text(data["uptime"]);
+                freeMemory.text(data["freeMemory"]);
+                availableMemory.text(data["availableMemory"])
+                cachedMemory.text(data["cachedMemory"])
+                swapFree.text(data["swapFree"])
+                usages.forEach(function(v, i) {
+                    var newUsage = ""+data["cpuUsage"][i]
+                    v.css("width", newUsage+"%");
+                    v.text(newUsage);
+                });
+            });
+        }, 5000); 
+    });
+</script>
+{{ end }}
+{{ define "footer" }}{{ end }}

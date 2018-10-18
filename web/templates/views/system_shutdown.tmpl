@@ -1,0 +1,161 @@
+{{ define "header" }}{{ end }}
+{{ define "content" }}
+<div class="shutdown-content">
+<h2 class="text-center">Reboot/Shutdown</h2>
+<div class="card bg-dark text-white text-center shutdown-card mx-auto">
+    <div class="card-header">Choose your destiny</div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#confirmModal" data-action="reboot">Reboot</button>
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#confirmModal" data-action="shutdown">Shutdown</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="modal" id="confirmModal">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Shutdown</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                Are you sure?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="yesButton">Yes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="cancelModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Cancel shutdown/reboot</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div calss="modal-body">
+                <div class="progress" style="height: 15px;">
+                    <div class="progress-bar bg-secondary" style="width:100%" id="progressDeath">...be quick or be dead...</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelButton">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="waitModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Reboot</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                Waiting for reboot...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var deathTimeout = {{ .Timeout }};
+    var deathTimer = null;
+    var shutdownAction = 'shutdown';
+    $(document).ready(function() {
+        var progressDeath = $('#progressDeath');
+        var confirmModal = $('#confirmModal');
+        var cancelModal = $('#cancelModal');
+        var waitModal = $('#waitModal');
+        confirmModal.on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget);
+            shutdownAction = button.data('action');
+            var modal = $(this);
+            modal.find('.modal-title').text(shutdownAction.capitalize());
+        });
+        cancelModal.on('shown.bs.modal', function(event) {
+            var i = deathTimeout-1;
+            deathTimer = setInterval(function() {
+                var p = (i/deathTimeout)*100;
+                progressDeath.css("width", p.toString()+"%");
+                i = i-1;
+                if (p < 50) {
+                    progressDeath.html("...help me...");
+                }
+                if (p < 30) {
+                    progressDeath.html("...bye bye...");
+                }
+                if(p < 10) {
+                    progressDeath.html("r.i.p.");
+                }
+                if (p < 0) {
+                    window.clearInterval(deathTimer);
+                    deatTimer = null;
+                    cancelModal.modal('hide');
+                    $.post("/system_shutdown/"+shutdownAction, function(data) {
+                        if (shutdownAction == "reboot") {
+                            waitModal.modal('show');
+                        }
+                        else {
+                            window.location.href = "https://www.google.com/";
+                        }
+                    });
+                }
+            }, 1000);
+        });
+        waitModal.on('shown.bs.modal', function(event) {
+            setTimeout(function() {
+                var checkTimer = setInterval(function() {
+                    $.ajax({
+                        type: "HEAD",
+                        url: "/login/",
+                        success: function() {
+                            window.clearInterval(checkTimer);
+                            waitModal.modal('hide');
+                            window.location.replace("/login/");
+                        }
+                    });
+                }, 1000);
+            }, 1000);
+        });
+        $('#yesButton').on('click', function() {
+            confirmModal.modal('hide');
+            if (deathTimeout > 0) {
+                cancelModal.modal('show');
+            }
+            else {
+                $.post("/system_shutdown/"+shutdownAction, function(data) {
+                    if (shutdownAction == "reboot") {
+                        waitModal.modal('show');
+                    }
+                    else {
+                        window.location.href = "https://www.google.com/";
+                    }
+                });
+            }
+        });
+        $('#cancelButton').on('click', function() {
+            if (deathTimer != null) {
+                window.clearInterval(deathTimer);
+            }
+            progressDeath.css("width", "100%");
+            cancelModal.modal('hide');
+        });
+    });
+</script>
+{{ end }}
+{{ define "footer" }}{{ end }}

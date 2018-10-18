@@ -1,0 +1,53 @@
+{{ define "header" }}
+<link rel="stylesheet" type="text/css" href="/css/datatables.min.css"/>
+{{ end }}
+{{ define "content" }}
+<div class="packages-content">
+<h2 class="text-center">Packages</h2>
+<div class="card bg-dark text-white text-center mx-auto packages-card">
+    <div class="card-header">Installed packages</div>
+    <div class="card-block">
+        <table id="packageTable" cellspacing="0" class="table table-sm table-dark table-striped packages-table">
+        <thead>
+            <th>Name</th>
+            <th>Version</th>
+            <th>Size (MiB)</th>
+        </thead>
+        <tbody>
+            {{ range .Packages }}
+            <tr>
+                <td data-toggle="tooltip" data-placement="top" title="{{.Summary}}">{{.Name}}</td>
+                <td>{{.Version}}</td>
+                <td>{{.Size}}</td>
+            </tr>
+            {{ end }}
+        </tbody>
+        </table>
+    </div>
+</div>
+</div>
+<script>
+    $(document).ready(function() {
+        $("#packageTable").DataTable({
+            columnDefs: [ {
+                targets: 1,
+                render: function(data, type, row) {
+                    if (type !== 'display') {
+                        return data;
+                    }
+                    if (data.length <= 18) {
+                        return data;
+                    }
+
+                    var shortened = data.substr(0, 18);
+                    return '<span class="ellipsis" title="'+data+'">'+shortened+'&#8230;</span>';
+                }
+            }]
+        });
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+{{ end }}
+{{ define "footer" }}
+<script type="text/javascript" src="/scripts/datatables.min.js"></script>
+{{ end }}
